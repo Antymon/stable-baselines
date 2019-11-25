@@ -9,6 +9,7 @@ import tensorflow as tf
 from stable_baselines.a2c.utils import total_episode_reward_logger
 from stable_baselines.common import tf_util, OffPolicyRLModel, SetVerbosity, TensorboardWriter
 from stable_baselines.common.vec_env import VecEnv
+from stable_baselines.common.math_util import scale_action, unscale_action
 from stable_baselines.deepq.replay_buffer import ReplayBuffer
 from stable_baselines.ppo2.ppo2 import safe_mean, get_schedule_fn
 from stable_baselines.sac.policies import SACPolicy
@@ -407,16 +408,15 @@ class SAC(OffPolicyRLModel):
                 # if random_exploration is set to 0 (normal setting)
                 if (self.num_timesteps < self.learning_starts
                     or np.random.rand() < self.random_exploration):
-                    # No need to rescale when sampling random action
-                    rescaled_action = action = self.env.action_space.sample()
+                    rescaled_action = self.env.action_space.sample()
+                    action = unscale_action(self.action_space, rescaled_action)
                 else:
                     action = self.policy_tf.step(obs[None], deterministic=False).flatten()
                     # Add noise to the action (improve exploration,
                     # not needed in general)
                     if self.action_noise is not None:
                         action = np.clip(action + self.action_noise(), -1, 1)
-                    # Rescale from [-1, 1] to the correct bounds
-                    rescaled_action = action * np.abs(self.action_space.low)
+                    rescaled_action = scale_action(self.action_space, action)
 
                 assert action.shape == self.env.action_space.shape
 

@@ -15,6 +15,7 @@ from stable_baselines import logger
 from stable_baselines.common import tf_util, OffPolicyRLModel, SetVerbosity, TensorboardWriter
 from stable_baselines.common.vec_env import VecEnv
 from stable_baselines.common.mpi_adam import MpiAdam
+from stable_baselines.common.math_util import scale_action, unscale_action
 from stable_baselines.ddpg.policies import DDPGPolicy
 from stable_baselines.common.mpi_running_mean_std import RunningMeanStd
 from stable_baselines.a2c.utils import total_episode_reward_logger
@@ -872,9 +873,10 @@ class DDPG(OffPolicyRLModel):
                             # Randomly sample actions from a uniform distribution
                             # with a probabilty self.random_exploration (used in HER + DDPG)
                             if np.random.rand() < self.random_exploration:
-                                rescaled_action = action = self.action_space.sample()
+                                rescaled_action = self.action_space.sample()
+                                action = unscale_action(self.action_space, rescaled_action)
                             else:
-                                rescaled_action = action * np.abs(self.action_space.low)
+                                rescaled_action = scale_action(self.action_space, action)
 
                             new_obs, reward, done, info = self.env.step(rescaled_action)
 
