@@ -34,7 +34,7 @@ def test_scaling_action():
     for (r1_low, r1_high) in test_ranges:
         for (r2_low, r2_high) in test_ranges:
             check_scaled_actions_from_range(np.array([r1_low, r2_low], dtype=np.float),
-                                    np.array([r1_high, r2_high], dtype=np.float))
+                                            np.array([r1_high, r2_high], dtype=np.float))
 
 
 def check_scaled_actions_from_range(low, high, scalar=False):
