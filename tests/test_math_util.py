@@ -1,3 +1,4 @@
+import tensorflow as tf
 import numpy as np
 from gym.spaces.box import Box
 
@@ -62,3 +63,16 @@ def check_scaled_actions_from_range(low, high, scalar=False):
     for (not_scaled, scaled) in expected_mapping:
         assert np.allclose(scale_action(action_space, not_scaled), scaled)
         assert np.allclose(unscale_action(action_space, scaled), not_scaled)
+
+def test_batch_shape_invariant_to_scaling():
+
+    action_space = Box(np.array([-10., -5., -1.]), np.array([10., 3., 2.]))
+
+    tensor = tf.constant(1., shape=[2, 3])
+    matrix = np.ones((2, 3))
+
+    assert scale_action(action_space, tensor).shape == (2, 3)
+    assert scale_action(action_space, matrix).shape == (2, 3)
+
+    assert unscale_action(action_space, tensor).shape == (2, 3)
+    assert unscale_action(action_space, matrix).shape == (2, 3)

@@ -313,7 +313,7 @@ class DDPG(OffPolicyRLModel):
     def _get_pretrain_placeholders(self):
         policy = self.policy_tf
         # Rescale
-        deterministic_action = self.actor_tf * np.abs(self.action_space.low)
+        deterministic_action = scale_action(self.action_space, self.actor_tf)
         return policy.obs_ph, self.actions, deterministic_action
 
     def setup_model(self):
@@ -957,8 +957,8 @@ class DDPG(OffPolicyRLModel):
                                     return self
 
                                 eval_action, eval_q = self._policy(eval_obs, apply_noise=False, compute_q=True)
-                                eval_obs, eval_r, eval_done, _ = self.eval_env.step(eval_action *
-                                                                                    np.abs(self.action_space.low))
+                                rescaled_action = scale_action(self.action_space, eval_action)
+                                eval_obs, eval_r, eval_done, _ = self.eval_env.step(rescaled_action)
                                 if self.render_eval:
                                     self.eval_env.render()
                                 eval_episode_reward += eval_r
@@ -1043,7 +1043,7 @@ class DDPG(OffPolicyRLModel):
         observation = observation.reshape((-1,) + self.observation_space.shape)
         actions, _, = self._policy(observation, apply_noise=not deterministic, compute_q=False)
         actions = actions.reshape((-1,) + self.action_space.shape)  # reshape to the correct action shape
-        actions = actions * np.abs(self.action_space.low)  # scale the output for the prediction
+        actions = scale_action(self.action_space, actions)  # scale the output for the prediction
 
         if not vectorized_env:
             actions = actions[0]

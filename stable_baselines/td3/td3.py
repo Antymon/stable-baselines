@@ -121,7 +121,7 @@ class TD3(OffPolicyRLModel):
     def _get_pretrain_placeholders(self):
         policy = self.policy_tf
         # Rescale
-        policy_out = self.policy_out * np.abs(self.action_space.low)
+        policy_out = scale_action(self.action_space, self.policy_out)
         return policy.obs_ph, self.actions_ph, policy_out
 
     def setup_model(self):
@@ -437,7 +437,7 @@ class TD3(OffPolicyRLModel):
             actions = np.clip(actions + self.action_noise(), -1, 1)
 
         actions = actions.reshape((-1,) + self.action_space.shape)  # reshape to the correct action shape
-        actions = actions * np.abs(self.action_space.low)  # scale the output for the prediction
+        actions = scale_action(self.action_space, actions)  # scale the output for the prediction
 
         if not vectorized_env:
             actions = actions[0]
