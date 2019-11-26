@@ -62,7 +62,7 @@ Documentation:
 - Fix multiprocessing example (@rusu24edward)
 - Fix `result_plotter` example
 - Fix typo in algos.rst, "containes" to "contains" (@SyllogismRXS)
-- Add info on another dependant project: PPO_CPP (@Antymon)
+- Add PPO_CPP project (@Antymon)
 
 Release 2.8.0 (2019-09-29)
 --------------------------
@@ -543,4 +543,4 @@ Thanks to @bjmuld @iambenzo @iandanforth @r7vme @brendenpetersen @huvar @abhiskk
 @EliasHasle @mrakgr @Bleyddyn @antoine-galataud @junhyeokahn @AdamGleave @keshaviyengar @tperol
 @XMaster96 @kantneel @Pastafarianist @GerardMaggiolino @PatrickWalter214 @yutingsz @sc420 @Aaahh @billtubbs
 @Miffyli @dwiel @miguelrass @qxcv @jaberkow @eavelardev @ruifeng96150 @pedrohbtp @srivatsankrishnan @evilsocket
-@MarvineGothic @jdossgollin @SyllogismRXS @rusu24edward
+@MarvineGothic @jdossgollin @SyllogismRXS @rusu24edward @Antymon
