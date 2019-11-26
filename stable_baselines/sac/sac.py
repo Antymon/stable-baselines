@@ -408,19 +408,19 @@ class SAC(OffPolicyRLModel):
                 # if random_exploration is set to 0 (normal setting)
                 if (self.num_timesteps < self.learning_starts
                     or np.random.rand() < self.random_exploration):
-                    rescaled_action = self.env.action_space.sample()
-                    action = scale_action(self.action_space, rescaled_action)
+                    unscaled_action = self.env.action_space.sample()
+                    action = scale_action(self.action_space, unscaled_action)
                 else:
                     action = self.policy_tf.step(obs[None], deterministic=False).flatten()
                     # Add noise to the action (improve exploration,
                     # not needed in general)
                     if self.action_noise is not None:
                         action = np.clip(action + self.action_noise(), -1, 1)
-                    rescaled_action = unscale_action(self.action_space, action)
+                    unscaled_action = unscale_action(self.action_space, action)
 
                 assert action.shape == self.env.action_space.shape
 
-                new_obs, reward, done, info = self.env.step(rescaled_action)
+                new_obs, reward, done, info = self.env.step(unscaled_action)
 
                 # Store transition in the replay buffer.
                 self.replay_buffer.add(obs, action, reward, new_obs, float(done))

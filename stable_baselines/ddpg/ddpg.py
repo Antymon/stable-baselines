@@ -873,12 +873,12 @@ class DDPG(OffPolicyRLModel):
                             # Randomly sample actions from a uniform distributiontrain_freq
                             # with a probabilty self.random_exploration (used in HER + DDPG)
                             if np.random.rand() < self.random_exploration:
-                                rescaled_action = self.action_space.sample()
-                                action = scale_action(self.action_space, rescaled_action)
+                                unscaled_action = self.action_space.sample()
+                                action = scale_action(self.action_space, unscaled_action)
                             else:
-                                rescaled_action = unscale_action(self.action_space, action)
+                                unscaled_action = unscale_action(self.action_space, action)
 
-                            new_obs, reward, done, info = self.env.step(rescaled_action)
+                            new_obs, reward, done, info = self.env.step(unscaled_action)
 
                             if writer is not None:
                                 ep_rew = np.array([reward]).reshape((1, -1))
@@ -957,8 +957,8 @@ class DDPG(OffPolicyRLModel):
                                     return self
 
                                 eval_action, eval_q = self._policy(eval_obs, apply_noise=False, compute_q=True)
-                                rescaled_action = unscale_action(self.action_space, eval_action)
-                                eval_obs, eval_r, eval_done, _ = self.eval_env.step(rescaled_action)
+                                unscaled_action = unscale_action(self.action_space, eval_action)
+                                eval_obs, eval_r, eval_done, _ = self.eval_env.step(unscaled_action)
                                 if self.render_eval:
                                     self.eval_env.render()
                                 eval_episode_reward += eval_r
