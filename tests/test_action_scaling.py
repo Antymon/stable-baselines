@@ -15,26 +15,30 @@ MODEL_LIST = [
 
 
 @pytest.mark.parametrize("model_class, model_kwargs", MODEL_LIST)
-def test_random_actions_scaling(model_class, model_kwargs):
+def test_buffer_actions_scaling(model_class, model_kwargs):
     """
-    Test if random actions are scaled to tanh co-domain before being put in a buffer
+    Test if actions are scaled to tanh co-domain before being put in a buffer
     for algorithms that use tanh-squashing, i.e., DDPG, TD3, SAC
 
     :param model_class: (BaseRLModel) A RL Model
     :param model_kwargs: (dict) Dictionary containing named arguments to the given algorithm
     """
-    env = DummyVecEnv([lambda: IdentityEnvBox(-1000, 1000)])
 
-    model = model_class("MlpPolicy", env, seed=1, random_exploration=1., **model_kwargs)
-    model.learn(total_timesteps=ROLLOUT_STEPS)
+    # check random and inferred actions as they possibly have different flows
+    for random_coeff in [0.0, 1.0]:
 
-    assert hasattr(model, 'replay_buffer')
+        env = DummyVecEnv([lambda: IdentityEnvBox(-1000, 1000)])
 
-    buffer = model.replay_buffer
+        model = model_class("MlpPolicy", env, seed=1, random_exploration=random_coeff, **model_kwargs)
+        model.learn(total_timesteps=ROLLOUT_STEPS)
 
-    assert buffer.can_sample(ROLLOUT_STEPS)
+        assert hasattr(model, 'replay_buffer')
 
-    _, actions, _, _, _ = buffer.sample(ROLLOUT_STEPS)
+        buffer = model.replay_buffer
 
-    assert not np.any(actions > np.ones_like(actions))
-    assert not np.any(actions < -np.ones_like(actions))
+        assert buffer.can_sample(ROLLOUT_STEPS)
+
+        _, actions, _, _, _ = buffer.sample(ROLLOUT_STEPS)
+
+        assert not np.any(actions > np.ones_like(actions))
+        assert not np.any(actions < -np.ones_like(actions))
