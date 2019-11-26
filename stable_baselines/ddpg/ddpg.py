@@ -819,8 +819,7 @@ class DDPG(OffPolicyRLModel):
             self.tb_seen_steps = []
 
             rank = MPI.COMM_WORLD.Get_rank()
-            # we assume symmetric actions.
-            assert np.all(np.abs(self.env.action_space.low) == self.env.action_space.high)
+
             if self.verbose >= 2:
                 logger.log('Using agent with the following configuration:')
                 logger.log(str(self.__dict__.items()))
