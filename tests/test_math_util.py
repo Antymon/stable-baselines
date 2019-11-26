@@ -65,7 +65,9 @@ def check_scaled_actions_from_range(low, high, scalar=False):
         assert np.allclose(unscale_action(action_space, scaled), not_scaled)
 
 def test_batch_shape_invariant_to_scaling():
-
+    """
+    test that scaling deals well with batches as tensors and numpy matrices in terms of shape
+    """
     action_space = Box(np.array([-10., -5., -1.]), np.array([10., 3., 2.]))
 
     tensor = tf.constant(1., shape=[2, 3])

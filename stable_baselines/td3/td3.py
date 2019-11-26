@@ -9,7 +9,7 @@ import tensorflow as tf
 from stable_baselines.a2c.utils import total_episode_reward_logger
 from stable_baselines.common import tf_util, OffPolicyRLModel, SetVerbosity, TensorboardWriter
 from stable_baselines.common.vec_env import VecEnv
-from stable_baselines.common.math_util import scale_action, unscale_action
+from stable_baselines.common.math_util import unscale_action, scale_action
 from stable_baselines.deepq.replay_buffer import ReplayBuffer
 from stable_baselines.ppo2.ppo2 import safe_mean, get_schedule_fn
 from stable_baselines.sac.sac import get_vars
@@ -121,7 +121,7 @@ class TD3(OffPolicyRLModel):
     def _get_pretrain_placeholders(self):
         policy = self.policy_tf
         # Rescale
-        policy_out = scale_action(self.action_space, self.policy_out)
+        policy_out = unscale_action(self.action_space, self.policy_out)
         return policy.obs_ph, self.actions_ph, policy_out
 
     def setup_model(self):
@@ -321,7 +321,7 @@ class TD3(OffPolicyRLModel):
                         or np.random.rand() < self.random_exploration):
                     # No need to rescale when sampling random action
                     rescaled_action = self.env.action_space.sample()
-                    action = unscale_action(self.action_space, rescaled_action)
+                    action = scale_action(self.action_space, rescaled_action)
                 else:
                     action = self.policy_tf.step(obs[None]).flatten()
                     # Add noise to the action, as the policy
@@ -329,7 +329,7 @@ class TD3(OffPolicyRLModel):
                     if self.action_noise is not None:
                         action = np.clip(action + self.action_noise(), -1, 1)
                     # Rescale from [-1, 1] to the correct bounds
-                    rescaled_action = scale_action(self.action_space, action)
+                    rescaled_action = unscale_action(self.action_space, action)
 
                 assert action.shape == self.env.action_space.shape
 
@@ -437,7 +437,7 @@ class TD3(OffPolicyRLModel):
             actions = np.clip(actions + self.action_noise(), -1, 1)
 
         actions = actions.reshape((-1,) + self.action_space.shape)  # reshape to the correct action shape
-        actions = scale_action(self.action_space, actions)  # scale the output for the prediction
+        actions = unscale_action(self.action_space, actions)  # scale the output for the prediction
 
         if not vectorized_env:
             actions = actions[0]

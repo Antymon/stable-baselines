@@ -15,7 +15,7 @@ from stable_baselines import logger
 from stable_baselines.common import tf_util, OffPolicyRLModel, SetVerbosity, TensorboardWriter
 from stable_baselines.common.vec_env import VecEnv
 from stable_baselines.common.mpi_adam import MpiAdam
-from stable_baselines.common.math_util import scale_action, unscale_action
+from stable_baselines.common.math_util import unscale_action, scale_action
 from stable_baselines.ddpg.policies import DDPGPolicy
 from stable_baselines.common.mpi_running_mean_std import RunningMeanStd
 from stable_baselines.a2c.utils import total_episode_reward_logger
@@ -313,7 +313,7 @@ class DDPG(OffPolicyRLModel):
     def _get_pretrain_placeholders(self):
         policy = self.policy_tf
         # Rescale
-        deterministic_action = scale_action(self.action_space, self.actor_tf)
+        deterministic_action = unscale_action(self.action_space, self.actor_tf)
         return policy.obs_ph, self.actions, deterministic_action
 
     def setup_model(self):
@@ -870,13 +870,13 @@ class DDPG(OffPolicyRLModel):
                             if rank == 0 and self.render:
                                 self.env.render()
 
-                            # Randomly sample actions from a uniform distribution
+                            # Randomly sample actions from a uniform distributiontrain_freq
                             # with a probabilty self.random_exploration (used in HER + DDPG)
                             if np.random.rand() < self.random_exploration:
                                 rescaled_action = self.action_space.sample()
-                                action = unscale_action(self.action_space, rescaled_action)
+                                action = scale_action(self.action_space, rescaled_action)
                             else:
-                                rescaled_action = scale_action(self.action_space, action)
+                                rescaled_action = unscale_action(self.action_space, action)
 
                             new_obs, reward, done, info = self.env.step(rescaled_action)
 
@@ -957,7 +957,7 @@ class DDPG(OffPolicyRLModel):
                                     return self
 
                                 eval_action, eval_q = self._policy(eval_obs, apply_noise=False, compute_q=True)
-                                rescaled_action = scale_action(self.action_space, eval_action)
+                                rescaled_action = unscale_action(self.action_space, eval_action)
                                 eval_obs, eval_r, eval_done, _ = self.eval_env.step(rescaled_action)
                                 if self.render_eval:
                                     self.eval_env.render()
@@ -1043,7 +1043,7 @@ class DDPG(OffPolicyRLModel):
         observation = observation.reshape((-1,) + self.observation_space.shape)
         actions, _, = self._policy(observation, apply_noise=not deterministic, compute_q=False)
         actions = actions.reshape((-1,) + self.action_space.shape)  # reshape to the correct action shape
-        actions = scale_action(self.action_space, actions)  # scale the output for the prediction
+        actions = unscale_action(self.action_space, actions)  # scale the output for the prediction
 
         if not vectorized_env:
             actions = actions[0]

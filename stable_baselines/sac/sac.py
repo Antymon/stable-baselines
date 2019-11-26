@@ -9,7 +9,7 @@ import tensorflow as tf
 from stable_baselines.a2c.utils import total_episode_reward_logger
 from stable_baselines.common import tf_util, OffPolicyRLModel, SetVerbosity, TensorboardWriter
 from stable_baselines.common.vec_env import VecEnv
-from stable_baselines.common.math_util import scale_action, unscale_action
+from stable_baselines.common.math_util import unscale_action, scale_action
 from stable_baselines.deepq.replay_buffer import ReplayBuffer
 from stable_baselines.ppo2.ppo2 import safe_mean, get_schedule_fn
 from stable_baselines.sac.policies import SACPolicy
@@ -140,7 +140,7 @@ class SAC(OffPolicyRLModel):
     def _get_pretrain_placeholders(self):
         policy = self.policy_tf
         # Rescale
-        deterministic_action = scale_action(self.action_space, self.deterministic_action)
+        deterministic_action = unscale_action(self.action_space, self.deterministic_action)
         return policy.obs_ph, self.actions_ph, deterministic_action
 
     def setup_model(self):
@@ -409,14 +409,14 @@ class SAC(OffPolicyRLModel):
                 if (self.num_timesteps < self.learning_starts
                     or np.random.rand() < self.random_exploration):
                     rescaled_action = self.env.action_space.sample()
-                    action = unscale_action(self.action_space, rescaled_action)
+                    action = scale_action(self.action_space, rescaled_action)
                 else:
                     action = self.policy_tf.step(obs[None], deterministic=False).flatten()
                     # Add noise to the action (improve exploration,
                     # not needed in general)
                     if self.action_noise is not None:
                         action = np.clip(action + self.action_noise(), -1, 1)
-                    rescaled_action = scale_action(self.action_space, action)
+                    rescaled_action = unscale_action(self.action_space, action)
 
                 assert action.shape == self.env.action_space.shape
 
@@ -519,7 +519,7 @@ class SAC(OffPolicyRLModel):
         observation = observation.reshape((-1,) + self.observation_space.shape)
         actions = self.policy_tf.step(observation, deterministic=deterministic)
         actions = actions.reshape((-1,) + self.action_space.shape)  # reshape to the correct action shape
-        actions = scale_action(self.action_space, actions) # scale the output for the prediction
+        actions = unscale_action(self.action_space, actions) # scale the output for the prediction
 
         if not vectorized_env:
             actions = actions[0]
