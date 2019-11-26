@@ -9,8 +9,10 @@ ROLLOUT_STEPS = 100
 
 MODEL_LIST = [
     (DDPG, dict(nb_train_steps=0, nb_rollout_steps=ROLLOUT_STEPS)),
-    (TD3, dict(train_freq=ROLLOUT_STEPS + 1)),
-    (SAC, dict(train_freq=ROLLOUT_STEPS + 1))
+    (TD3, dict(train_freq=ROLLOUT_STEPS + 1, learning_starts=0)),
+    (SAC, dict(train_freq=ROLLOUT_STEPS + 1, learning_starts=0)),
+    (TD3, dict(train_freq=ROLLOUT_STEPS + 1, learning_starts=ROLLOUT_STEPS)),
+    (SAC, dict(train_freq=ROLLOUT_STEPS + 1, learning_starts=ROLLOUT_STEPS))
 ]
 
 
