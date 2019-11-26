@@ -173,7 +173,7 @@ this study are from stable-baselines.
 PPO_CPP: C++ version of a Deep Reinforcement Learning algorithm PPO
 -------------------------------------------------------------------
 Executes PPO at C++ level yielding notable execution performance speedups.
-Uses Stable Baselines to create a computational graph which is then used for training at the C++ level with custom environments.
+Uses Stable Baselines to create a computational graph which is then used for training with custom environments by machine-code-compiled binary.
 
 | Authors: Szymon Brych
 | Email: szymon.brych@gmail.com
