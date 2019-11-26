@@ -27,6 +27,7 @@ New Features:
 - Add parameter `exploration_initial_eps` to DQN. (@jdossgollin)
 - Add type checking and PEP 561 compliance.
   Note: most functions are still not annotated, this will be a gradual process.
+- DDPG, TD3 and SAC accept non-symmetric action spaces. (@Antymon)
 
 Bug Fixes:
 ^^^^^^^^^^
