@@ -406,8 +406,9 @@ class SAC(OffPolicyRLModel):
                 # from a uniform distribution for better exploration.
                 # Afterwards, use the learned policy
                 # if random_exploration is set to 0 (normal setting)
-                if (self.num_timesteps < self.learning_starts
-                    or np.random.rand() < self.random_exploration):
+                if self.num_timesteps < self.learning_starts or np.random.rand() < self.random_exploration:
+                    # actions sampled from action space are from range specific to the environment
+                    # but algorithm operates on tanh-squashed actions therefore simple scaling is used
                     unscaled_action = self.env.action_space.sample()
                     action = scale_action(self.action_space, unscaled_action)
                 else:
@@ -416,6 +417,7 @@ class SAC(OffPolicyRLModel):
                     # not needed in general)
                     if self.action_noise is not None:
                         action = np.clip(action + self.action_noise(), -1, 1)
+                    # inferred actions need to be transformed to environment action_space before stepping
                     unscaled_action = unscale_action(self.action_space, action)
 
                 assert action.shape == self.env.action_space.shape
