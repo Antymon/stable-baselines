@@ -60,6 +60,7 @@ Documentation:
 - Fix multiprocessing example (@rusu24edward)
 - Fix `result_plotter` example
 - Fix typo in algos.rst, "containes" to "contains" (@SyllogismRXS)
+- Add info on another dependant project: PPO_CPP (@Antymon)
 
 Release 2.8.0 (2019-09-29)
 --------------------------
