@@ -3,7 +3,6 @@ import numpy as np
 
 from stable_baselines import DDPG, TD3, SAC
 from stable_baselines.common.identity_env import IdentityEnvBox
-from stable_baselines.common.vec_env import DummyVecEnv
 
 ROLLOUT_STEPS = 100
 
