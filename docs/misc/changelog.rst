@@ -34,7 +34,7 @@ Bug Fixes:
 - Fix a bug in DDPG where `predict` method with `deterministic=False` would fail
 - Fix a bug in TRPO: mean_losses was not initialized causing the logger to crash when there was no gradients (@MarvineGothic)
 - Fix a bug in `cmd_util` from API change in recent Gym versions
-- Fix a bug in DDPG, TD3 and SAC where warmup actions would end up scaled in the replay buffer
+- Fix a bug in DDPG, TD3 and SAC where warmup and random exploration actions would end up scaled in the replay buffer
 
 Deprecations:
 ^^^^^^^^^^^^^
