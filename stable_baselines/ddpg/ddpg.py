@@ -870,7 +870,7 @@ class DDPG(OffPolicyRLModel):
                             if rank == 0 and self.render:
                                 self.env.render()
 
-                            # Randomly sample actions from a uniform distributiontrain_freq
+                            # Randomly sample actions from a uniform distribution
                             # with a probabilty self.random_exploration (used in HER + DDPG)
                             if np.random.rand() < self.random_exploration:
                                 unscaled_action = self.action_space.sample()
