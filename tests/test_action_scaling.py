@@ -29,7 +29,7 @@ def test_buffer_actions_scaling(model_class, model_kwargs):
     # check random and inferred actions as they possibly have different flows
     for random_coeff in [0.0, 1.0]:
 
-        env = DummyVecEnv([lambda: IdentityEnvBox(-1000, 1000)])
+        env = IdentityEnvBox(-2000, 1000)
 
         model = model_class("MlpPolicy", env, seed=1, random_exploration=random_coeff, **model_kwargs)
         model.learn(total_timesteps=ROLLOUT_STEPS)
