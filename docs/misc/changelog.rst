@@ -65,6 +65,7 @@ Documentation:
 - Fix typo in algos.rst, "containes" to "contains" (@SyllogismRXS)
 - Fix outdated source documentation for load_results
 - Add PPO_CPP project (@Antymon)
+- Add section on C++ portability of Tensorflow models (@Antymon)
 
 Release 2.8.0 (2019-09-29)
 --------------------------
